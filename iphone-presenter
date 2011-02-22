@@ -13,8 +13,11 @@ import BaseHTTPServer
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from mako.template import Template
 import dbus
+import gtk, gobject,threading
 
 
+gobject.threads_init()
+gtk.gdk.threads_init()
 
 # marking as html5 does not work, then
 # table colspan goes wrong.
@@ -22,6 +25,31 @@ import dbus
 # <!DOCTYPE html>
 
 APPDIR = os.path.dirname(os.path.realpath(__file__))
+
+
+class GuiThread(threading.Thread):
+    def __init__(self, httpd):
+        super(GuiThread, self).__init__()
+        self.httpd = httpd
+        w = gtk.Window()
+        w.set_title("iPhone Presenter")
+        l = gtk.Label("browse to http://<<server>>:8100")
+        q = gtk.Button("Quit")
+        box = gtk.VBox()
+        box.set_border_width(10)
+        box.set_spacing(10)
+        box.add(l)
+        box.add(q)
+        w.add(box)
+        w.show_all()
+        w.connect("destroy", lambda _: gtk.main_quit())
+        q.connect("clicked", lambda _: gtk.main_quit())
+
+    def run(self):
+        gtk.main()
+        httpd.shutdown()
+
+
 
 def pgup():
     os.system(r"xvkbd -text '\[Next]'")
@@ -84,8 +112,14 @@ class MyHandler(SimpleHTTPRequestHandler):
             print "location not available:", self.path
             return
 
+
+
+
 server_address = ('0.0.0.0', 8100)
 httpd = BaseHTTPServer.HTTPServer(server_address, MyHandler)
+
+gt = GuiThread(httpd)
+gt.start()
 
 sa = httpd.socket.getsockname()
 print "Serving on", sa[0], "port", sa[1]
