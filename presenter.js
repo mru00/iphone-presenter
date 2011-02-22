@@ -13,8 +13,8 @@ request.onreadystatechange=function() {
     }
 };
 function exec(op) {
-	/*	request.open("GET", "/do/"+op, true);
-		request.send();*/
+	request.open("GET", "/do/"+op, true);
+	request.send();
 }
 
 /* updateOrientation checks the current orientation, sets the body's
@@ -29,6 +29,22 @@ function updateOrientation()
 	  right. */
 	var orientation=window.orientation;
 	output=document.getElementById("currentOrientation");
+	var cont = document.getElementById("container");
+	var prev = document.getElementById("prev");
+	var next = document.getElementById("next");
+
+	cont.style.height="100px";
+	output.innerHTML="" +window.innerHeight+ "x" +window.innerWidth+ "";
+	cont.style.bottom=window.innerHeight  + "px";
+	cont.style.right=window.innerWidth  + "px";
+
+	next.style.height=window.innerHeight + "px";
+	next.style.width=window.innerWidth/2  + "px";
+
+	prev.style.height=window.innerHeight  + "px";
+	prev.style.width=window.innerWidth/2  + "px";
+
+
 	switch(orientation)
 	{
 		case 0:
@@ -42,7 +58,7 @@ function updateOrientation()
 
 				/* Add a descriptive message on "Handling iPhone or
 				 * iPod touch Orientation Events"  */
-				output.innerHTML="Now in portrait orientation (Home button on the bottom).";
+			//				output.innerHTML="Now in portrait orientation (Home button on the bottom).";
 				break;
 
 		case 90:
@@ -55,7 +71,7 @@ function updateOrientation()
 				   iPod touch Orientation Events". */
 			//				document.body.setAttribute("class","landscapeLeft");
 
-				output.innerHTML="Now in landscape orientation and turned to the left (Home button to the right).";
+			//				output.innerHTML="Now in landscape orientation and turned to the left (Home button to the right).";
 				break;
 
 		case -90:
@@ -68,26 +84,21 @@ function updateOrientation()
 				   iPod touch Orientation Events". */
 				//document.body.setAttribute("class","landscapeRight");
 				
-				output.innerHTML="Now in landscape orientation and turned to the right (Home button to the left).";
+			//				output.innerHTML="Now in landscape orientation and turned to the right (Home button to the left).";
 				break;
 	}
 
 }
 
 var touchbeginx= 0;
-var swiper = null;
 
 function onTouchStart(event) {
 	touchbeginx = event.changedTouches[0].pageX;
-	if(swiper == null)swiper = document.getElementById("cube");
 
 };
 
 
 function onTouchMove(event) {
-	var td = touchbeginx - event.touches[0].pageX;
-	var newsize = -td/5;
-	swiper.style.webkitTransform = "rotateY("+newsize+"deg)";
 	event.preventDefault();
 };
 
@@ -98,16 +109,13 @@ function onTouchEnd(event) {
 	} else if (td < -50) {
 		exec('next');
 	}
-	var output=document.getElementById("currentOrientation");
-	var swiper = document.getElementById("cube");
-	swiper.style.webkitTransform = "rotateY(0deg)";
 };
 
 
 // Point to the updateOrientation function when iPhone switches
 // between portrait and landscape modes.
 
-/*window.onorientationchange=updateOrientation;*/
+window.onorientationchange=updateOrientation;
 
 window.ontouchstart=onTouchStart;
 window.ontouchend=onTouchEnd;
