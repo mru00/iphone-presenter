@@ -12,7 +12,7 @@ import sys, os, platform, shutil
 import BaseHTTPServer
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from mako.template import Template
-import dbus
+import socket
 import gtk, gobject,threading
 
 
@@ -25,7 +25,8 @@ gtk.gdk.threads_init()
 # <!DOCTYPE html>
 
 APPDIR = os.path.dirname(os.path.realpath(__file__))
-
+IP = socket.gethostbyname_ex(socket.gethostname())[2][0]
+print "possibly external ip:", IP
 
 class GuiThread(threading.Thread):
     def __init__(self, httpd):
@@ -33,7 +34,7 @@ class GuiThread(threading.Thread):
         self.httpd = httpd
         w = gtk.Window()
         w.set_title("iPhone Presenter")
-        l = gtk.Label("browse to http://<<server>>:8100")
+        l = gtk.Label("browse to http://%s:8100" % IP)
         q = gtk.Button("Quit")
         box = gtk.VBox()
         box.set_border_width(10)

@@ -13,8 +13,8 @@ request.onreadystatechange=function() {
     }
 };
 function exec(op) {
-	request.open("GET", "/do/"+op, true);
-	request.send();
+	/*	request.open("GET", "/do/"+op, true);
+		request.send();*/
 }
 
 /* updateOrientation checks the current orientation, sets the body's
@@ -75,23 +75,32 @@ function updateOrientation()
 }
 
 var touchbeginx= 0;
+var swiper = null;
 
 function onTouchStart(event) {
 	touchbeginx = event.changedTouches[0].pageX;
+	if(swiper == null)swiper = document.getElementById("cube");
+
 };
 
+
 function onTouchMove(event) {
+	var td = touchbeginx - event.touches[0].pageX;
+	var newsize = -td/5;
+	swiper.style.webkitTransform = "rotateY("+newsize+"deg)";
 	event.preventDefault();
 };
 
 function onTouchEnd(event) {
-	td = touchbeginx - event.changedTouches[0].pageX;
+	var td = touchbeginx - event.changedTouches[0].pageX;
 	if (td>50) {
 		exec('prev');
 	} else if (td < -50) {
 		exec('next');
 	}
 	var output=document.getElementById("currentOrientation");
+	var swiper = document.getElementById("cube");
+	swiper.style.webkitTransform = "rotateY(0deg)";
 };
 
 
@@ -102,3 +111,4 @@ function onTouchEnd(event) {
 
 window.ontouchstart=onTouchStart;
 window.ontouchend=onTouchEnd;
+window.ontouchmove=onTouchMove;
